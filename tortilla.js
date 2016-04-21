@@ -30,7 +30,7 @@ function runTortilla() {
 		return require('plist');
 	}
 
-	var tortillaBase = path.normalize(__dirname + "/..");
+	var tortillaBase = path.normalize(__dirname);
 	//console.log("tortillaBase", tortillaBase);
 
 	var tortArgs = minimist(process.argv.slice(2));
@@ -42,6 +42,14 @@ function runTortilla() {
 		console.log("Tortilla " + VERSION);
 		console.log("Use the force, read the source!");
 		process.exit();
+	}
+	
+	var buildParams = {};
+	for (var k in tortArgs) {
+		if (k.substring(0,1) == "P") {
+			var p = k.substring(1);
+			buildParams[p] = tortArgs[k];
+		}
 	}
 
 	var projectBase = objProp(tortArgs, "project", ".");
@@ -64,7 +72,7 @@ function runTortilla() {
 			var platformPackDir = platformDir + "/pack";
 
 			// determine and create output dir
-			var buildDir = projectBase + "/build";
+			var buildDir = objProp(tortArgs, "out", projectBase + "/build");
 			var outputDir = buildDir + "/" + platform;
 			fs.rmrfSync(outputDir);
 			fs.mkdirRecursiveSync(outputDir);
@@ -103,10 +111,14 @@ function runTortilla() {
 				if (f == "always") include = true;
 				else {
 					var parts = f.split(/\-/);
-					var key = parts[0];
-					if (key == "platform") {
+					var type = parts[0];
+					if (type == "platform") {
 						var val = parts[1];
 						include = val == platform;
+					} else if(type == "param") {
+						var name = parts[1];
+						var val = parts[2];
+						include = val == buildParams[name];
 					} else {
 						include = false;
 					}
@@ -133,9 +145,8 @@ function runTortilla() {
 				});
 			}
 			copyResDir();
-
+			
 			function afterCopyResDirs() {
-
 				// copy the platform files so they may be modified
 				// also include the shared files
 				fs.copyRecursive(tortillaBase + "/shared", tmpDirTort, function(err) {
@@ -246,15 +257,6 @@ function runTortilla() {
 					}
 
 					function exportBuildData() {
-
-						var buildParams = {};
-						for (var k in tortArgs) {
-							if (k.substring(0,1) == "P") {
-								var p = k.substring(1);
-								buildParams[p] = tortArgs[k];
-							}
-						}
-
 						// make some build info available to the code
 						var tData =
 							"tortilla.VERSION = \"" + VERSION + "\";\n" +
