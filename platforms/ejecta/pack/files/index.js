@@ -1,0 +1,2 @@
+// SCRIPT //
+tortilla.ejectaInit();

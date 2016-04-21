@@ -1,0 +1,12 @@
+{
+  "name": "Testgame",
+  "version": "1.33.7",
+  "app": {
+    "launch":{
+      "local_path": "index.html"
+    }
+  },
+  "icons": {
+    "256": "icon.png"
+  }
+}

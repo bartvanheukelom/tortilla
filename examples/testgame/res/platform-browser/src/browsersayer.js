@@ -1,0 +1,1 @@
+console.log("yay i'm in a browser");
