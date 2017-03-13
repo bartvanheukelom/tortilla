@@ -8,8 +8,8 @@
 	tortilla.sharedInit();
 
 	var ua = navigator.userAgent;
-	// trace("ua: " + ua + "; MSIE: " + ua.indexOf("MSIE ") + "; Trident: " + ua.indexOf("Trident/"));
 	var isIE = ua.indexOf("MSIE ") != -1 || ua.indexOf("Trident/") != -1;
+	var isIEorEDGE = isIE || ua.indexOf('Edge/') != -1;
 
 	var fpsMeter = null;
 

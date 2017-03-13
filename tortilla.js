@@ -299,6 +299,8 @@ function runTortilla() {
 
 						var minify = tortArgs.hasOwnProperty("minify");
 						var concatjs = tortArgs.hasOwnProperty("concatjs");
+						var consolecompat = tortArgs.hasOwnProperty("consolecompat");
+						
 						var uglify = minify ? require("uglify-js") : null;
 
 						var concatted = "";
@@ -406,6 +408,43 @@ function runTortilla() {
 										scriptTags += "ejecta.include('" + f + "');\n";
 									});
 									return mustReplace(html, "// SCRIPT //", scriptTags);
+								});
+							} else if(platform == "browser") {
+								processFile(packOutDir + "/index.html", function(html) {
+									var scriptTags = "";
+									
+									if(consolecompat) {
+										scriptTags += '<!-- Avoid console errors in browsers that lack a console -->\n' +
+											'<script type="text/javascript">\n' +
+												'var ua = navigator.userAgent;\n' +
+												'var isIE = ua.indexOf("MSIE ") != -1 || ua.indexOf("Trident/") != -1;\n' +
+												'var isIEorEDGE = isIE || ua.indexOf("Edge/") != -1;\n\n' +
+											
+												'if(isIEorEDGE) {\n' +
+													'(function() {\n' +
+														'var method;\n' +
+														'var noop = function () {};\n' +
+														'var methods = [\n'+
+															"'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',\n" +
+															"'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',\n" +
+															"'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',\n" +
+															"'timeStamp', 'trace', 'warn'\n" +
+														'];\n' +
+														'var length = methods.length;\n' +
+														'var console = (window.console = window.console || {});\n' +
+														'while (length--) {\n' +
+															'method = methods[length];\n' +
+															'console[method] = noop;\n' +
+														'}\n' +
+													'}());\n' +
+												'}\n' +
+											'</script>\n\n';
+									}
+									
+									jsPaths.forEach(function(f) {
+										scriptTags += "<script src='" + f + "'></script>\n\t\t";
+									});
+									return mustReplace(html, /<!--SCRIPT-->.+<!--_SCRIPT-->/, scriptTags);
 								});
 							} else {
 								processFile(packOutDir + "/index.html", function(html) {
