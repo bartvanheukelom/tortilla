@@ -1,12 +1,12 @@
 "use strict";
 
 (function() {
-	
+
 	var trace = tortilla.trace.bind(tortilla);
 	trace(tortilla.VERSION + " starting up");
-	
+
 	tortilla.sharedInit();
-	
+
 	var ua = navigator.userAgent;
 	// trace("ua: " + ua + "; MSIE: " + ua.indexOf("MSIE ") + "; Trident: " + ua.indexOf("Trident/"));
 	var isIE = ua.indexOf("MSIE ") != -1 || ua.indexOf("Trident/") != -1;
@@ -16,7 +16,7 @@
 	tortilla.isVisible = function() {
 		return Visibility.state() == "visible";
 	};
-		
+
 	tortilla.loadScript = function (url, done) {
 		$.getScript(url)
 			.done(function() {
@@ -26,31 +26,31 @@
 				done(false, exception);
 			});
 	};
-	
+
 	tortilla.setCursor = function(cursor) {
 		$(document.body).css("cursor", cursor);
 	};
-	
+
 	tortilla.fullscreenSupported = screenfull.enabled;
-	
+
 	tortilla.isFullscreen = function() {
 		return screenfull.isFullscreen;
 	};
-	
+
 	tortilla.setFullscreen = function(fs) {
 		if (fs == this.isFullscreen) return;
 		if (fs) screenfull.request();
 		else screenfull.exit();
 	};
-	
+
 	tortilla.openUrl = function(url) {
 		window.open(url);
 	};
-	
+
 	tortilla.parameters.insert(parseUrl().params);
-	
+
 	tortilla.isWebGLSupported = function() {
-		
+
 		// check if it's known at all
 		if (!("WebGLRenderingContext" in window)) return false;
 
@@ -74,7 +74,7 @@
 	};
 
 	var preInitSteps = 2;
-	
+
 	Visibility.onVisible(function() {
 		if (Visibility.isSupported()) {
 			Visibility.change(function(e) {
@@ -83,18 +83,18 @@
 		}
 		initStepDone();
 	});
-	
+
 	if (screenfull.enabled) {
 		$(document).on(screenfull.raw.fullscreenchange, function () {
 			tortilla.dispatchEvent(tortilla.EV_FULLSCREEN_CHANGED, [tortilla.isFullscreen()]);
 		});
 	}
-	
+
 	function initStepDone() {
 		preInitSteps--;
 		if (preInitSteps == 0) start();
 	}
-	
+
 	$(document).ready(function() {
 		if (tortilla.FONTS.length == 0) initStepDone();
 		else {
@@ -115,17 +115,17 @@
 			});
 		}
 	});
-	
+
 	function start() {
-		
+
 		var game = tortilla.game;
 
 		var gs = typeof(game.settings) === "function" ? game.settings() : {};
 		tortilla.namespace = gs.namespace;
-	
+
 		var jCanvas = $("<canvas/>");
 		$(document.body).append(jCanvas);
-		
+
 		var canvas = jCanvas[0];
 		tortilla.canvas = canvas;
 
@@ -155,34 +155,40 @@
 			tortilla.context = canvas.getContext(ctReal);
 			tortilla.contextType = ct;
 		}
-		
+
 		if (gs.showFps) {
-			fpsMeter = new FPSMeter();	
+			fpsMeter = new FPSMeter();
 		}
-		
+
 		var win = $(window);
-		
+
 		var dpr;
 		if (window.devicePixelRatio) dpr = window.devicePixelRatio;
 		else dpr = 1;
-		
+
 		tortilla.windowToCanvas = function(x, y) {
 			return new tortilla.Point(x*dpr,y*dpr);
 		};
 
 		if (!gs.hasOwnProperty("canvasMinWidth")) gs.canvasMinWidth = 1;
 		if (!gs.hasOwnProperty("canvasMinHeight")) gs.canvasMinHeight = 1;
-				
+
 		function sizeCanvas() {
-			
+
 			var ww = window.innerWidth;
 			var wh = window.innerHeight;
 			
+			var ow = canvas.width;
+			var oh = canvas.height;
+
 			trace("canvas size " + ww + "x" + wh);
 
 			var oversize = false;
 			var cw = ww * dpr;
 			var ch = wh * dpr;
+			
+			if(cw == ow && ch < oh * 0.6) return; //TODO: this is a workaround for soft keyboard resize. there has to be a better way
+			
 			if (cw < gs.canvasMinWidth) {
 				cw = gs.canvasMinWidth;
 				oversize = true;
@@ -196,13 +202,13 @@
 			canvas.height = ch;
 			jCanvas.css({width: (cw/dpr) + "px", height: (ch/dpr) + "px"});
 			$("html, body").css("overflow", oversize ? "auto": "hidden");
-			
+
 			tortilla.dispatchEvent(tortilla.EV_RESIZED, []);
-			
+
 		}
 		win.resize(sizeCanvas);
 		sizeCanvas();
-		
+
 		// prevent input events
 		function pd(e) {
 			var elem, evt = e ? e:event;
@@ -220,7 +226,7 @@
 			}
 			pd(e);
 		}
-		
+	
 		document.addEventListener("mousedown", focusAndPd);
 		document.addEventListener("click", pd);
 		document.addEventListener("dblclick", pd);
@@ -233,10 +239,10 @@
 		document.addEventListener("touchenter", pd);
 		document.addEventListener("touchleave", pd);
 		document.addEventListener("touchmove", pd);
-		
+
 		// window.addEventListener("focus", function() { console.log("WINDOW FOCUSED"); });
 		// window.addEventListener("blur", function() { console.log("WINDOW BLURRED"); });
-		
+
 		function kpd(e) {
 //			console.log("kpd", e);
 			var blocked = [
@@ -251,26 +257,26 @@
 		document.addEventListener("keydown", kpd);
 		document.addEventListener("keyup", kpd);
 //		document.addEventListener("keypress", kpd);
-		
+
 		if (typeof(game.init) === "function")
 			game.init();
-		
+
 		if (typeof(game.frame) === "function") {
-			
+
 			var minFps = gs.hasOwnProperty("minFps") ? gs.minFps : 15;
-			
+
 			var preciseTime = "performance" in window && "now" in window.performance;
 			trace("Using precision timer: " + preciseTime);
 			var time = preciseTime ? performance.now() : Date.now();
 			var frame = null; frame = function() {
-				
+
 				var context = tortilla.context;
 //				var context = canvas.getContext(ctReal);
-				
+
 				var now = preciseTime ? performance.now() : Date.now();
 				var dt = Math.max(0.0001, Math.min(1/minFps, (now-time)/1000));
 				time = now;
-				
+
 				try {
 					game.frame(context, dt);
 					if (fpsMeter != null && !gs.manualFpsCount) tortilla.countFrameRendered();
@@ -282,14 +288,14 @@
 					//if (42 < 1) alert("The end is here"); // you can place a breakpoint on this line
 				}
 				requestAnimationFrame(frame);
-			
+
 			};
 			requestAnimationFrame(frame);
-		
+
 		}
-		
+
 	}
-	
+
 	function parseUrl() {
 
 		// url params and self url
@@ -304,18 +310,18 @@
 			// extract param string
 			var qin = selfUrl.indexOf(parChar);
 			if (qin != -1) {
-		
+
 				var urlPartParams = selfUrl.substr(qin+1);
 				selfUrl = selfUrl.substr(0, qin);
-		
+
 				// parse param string
 				var pairs = urlPartParams.split("&");
 				$.each(pairs, function(i,pair) {
 					var parts = pair.split("=");
-					params[decodeURIComponent(parts[0])] = parts.length > 1 ? decodeURIComponent(parts[1]) : null;	
+					params[decodeURIComponent(parts[0])] = parts.length > 1 ? decodeURIComponent(parts[1]) : null;
 				});
-		
-			}	
+
+			}
 
 		}
 		trace("Self URL: " + selfUrl);
