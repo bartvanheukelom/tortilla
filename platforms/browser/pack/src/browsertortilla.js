@@ -124,7 +124,8 @@
 		tortilla.namespace = gs.namespace;
 
 		var jCanvas = $("<canvas/>");
-		$(document.body).append(jCanvas);
+		//$(document.body).append(jCanvas);
+		$('#wrap').append(jCanvas);
 
 		var canvas = jCanvas[0];
 		tortilla.canvas = canvas;
