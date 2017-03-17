@@ -220,8 +220,8 @@
 			var elem, evt = e ? e:event;
 			if (evt.srcElement)  elem = evt.srcElement;
 			else if (evt.target) elem = evt.target;
-			//console.log("pd: elem.tagName: " + elem.tagName);
-			if (elem.tagName != "INPUT" && elem.tagName != "VIDEO") e.preventDefault();
+			console.log("pd: elem.tagName: " + elem.tagName);
+			if (elem.tagName != "INPUT" && elem.tagName != "VIDEO" && elem.tagName != "A") e.preventDefault();
 		}
 		function focusAndPd(e) {
 //			console.log("CLICK! hasFocus", document.hasFocus(), "isIE", isIE);
