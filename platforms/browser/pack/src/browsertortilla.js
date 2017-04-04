@@ -173,6 +173,7 @@
 
 		if (!gs.hasOwnProperty("canvasMinWidth")) gs.canvasMinWidth = 1;
 		if (!gs.hasOwnProperty("canvasMinHeight")) gs.canvasMinHeight = 1;
+		if (!gs.hasOwnProperty("mobileResizeRestrictions"))	gs.mobileResizeRestrictions = false;
 
 		function sizeCanvas() {
 
@@ -188,12 +189,14 @@
 			var cw = ww * dpr;
 			var ch = wh * dpr;
 			
-			if(cw <= ch) {
-				//Once you're in landscape, don't go back
-				trace('Tortilla prevented resize from going to portrait!');
-				return;
+			if(gs.mobileResizeRestrictions) { // only apply these restrictions if the setting is used
+				if(cw <= ch) {
+					//Once you're in landscape, don't go back
+					trace('Tortilla prevented resize from going to portrait!');
+					return;
+				}
+				if(cw == ow && ch < oh * 0.6) return; //TODO: this is a workaround for soft keyboard resize. there has to be a better way				
 			}
-			if(cw == ow && ch < oh * 0.6) return; //TODO: this is a workaround for soft keyboard resize. there has to be a better way
 			
 			if (cw < gs.canvasMinWidth) {
 				cw = gs.canvasMinWidth;
