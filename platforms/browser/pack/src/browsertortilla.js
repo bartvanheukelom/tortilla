@@ -236,18 +236,18 @@
 			pd(e);
 		}
 	
-		// document.addEventListener("mousedown", focusAndPd);
-		// document.addEventListener("click", pd);
-		// document.addEventListener("dblclick", pd);
-		// document.addEventListener("mouseup", pd);
-		// document.addEventListener("wheel", pd);
+		document.addEventListener("mousedown", focusAndPd);
+		document.addEventListener("click", pd);
+		document.addEventListener("dblclick", pd);
+		document.addEventListener("mouseup", pd);
+		document.addEventListener("wheel", pd);
 		
-		// document.addEventListener("touchstart", focusAndPd);
-		// document.addEventListener("touchcancel", pd);
-		// document.addEventListener("touchend", pd);
-		// document.addEventListener("touchenter", pd);
-		// document.addEventListener("touchleave", pd);
-		// document.addEventListener("touchmove", pd);
+		document.addEventListener("touchstart", focusAndPd);
+		document.addEventListener("touchcancel", pd);
+		document.addEventListener("touchend", pd);
+		document.addEventListener("touchenter", pd);
+		document.addEventListener("touchleave", pd);
+		document.addEventListener("touchmove", pd);
 
 		// window.addEventListener("focus", function() { console.log("WINDOW FOCUSED"); });
 		// window.addEventListener("blur", function() { console.log("WINDOW BLURRED"); });
