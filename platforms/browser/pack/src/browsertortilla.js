@@ -179,7 +179,7 @@
 
 			var ww = window.innerWidth;
 			var wh = window.innerHeight;
-			
+
 			var ow = canvas.width;
 			var oh = canvas.height;
 
@@ -188,16 +188,16 @@
 			var oversize = false;
 			var cw = ww * dpr;
 			var ch = wh * dpr;
-			
+
 			if(gs.mobileResizeRestrictions) { // only apply these restrictions if the setting is used
 				if(cw <= ch) {
 					//Once you're in landscape, don't go back
 					trace('Tortilla prevented resize from going to portrait!');
 					return;
 				}
-				if(cw == ow && ch < oh * 0.6) return; //TODO: this is a workaround for soft keyboard resize. there has to be a better way				
+				if(cw == ow && ch < oh * 0.6) return; //TODO: this is a workaround for soft keyboard resize. there has to be a better way
 			}
-			
+
 			if (cw < gs.canvasMinWidth) {
 				cw = gs.canvasMinWidth;
 				oversize = true;
@@ -235,19 +235,19 @@
 			}
 			pd(e);
 		}
-	
-		document.addEventListener("mousedown", focusAndPd);
-		document.addEventListener("click", pd);
-		document.addEventListener("dblclick", pd);
-		document.addEventListener("mouseup", pd);
-		document.addEventListener("wheel", pd);
-		
-		document.addEventListener("touchstart", focusAndPd);
-		document.addEventListener("touchcancel", pd);
-		document.addEventListener("touchend", pd);
-		document.addEventListener("touchenter", pd);
-		document.addEventListener("touchleave", pd);
-		document.addEventListener("touchmove", pd);
+
+		document.addEventListener("mousedown", focusAndPd, {passive:false});
+		document.addEventListener("click", pd, {passive:false});
+		document.addEventListener("dblclick", pd, {passive:false});
+		document.addEventListener("mouseup", pd, {passive:false});
+		document.addEventListener("wheel", pd, {passive:false});
+		//
+		// document.addEventListener("touchstart", focusAndPd, {passive:false});
+		// document.addEventListener("touchcancel", pd, {passive:false});
+		// document.addEventListener("touchend", pd, {passive:false});
+		// document.addEventListener("touchenter", pd, {passive:false});
+		// document.addEventListener("touchleave", pd, {passive:false});
+		// document.addEventListener("touchmove", pd, {passive:false});
 
 		// window.addEventListener("focus", function() { console.log("WINDOW FOCUSED"); });
 		// window.addEventListener("blur", function() { console.log("WINDOW BLURRED"); });
