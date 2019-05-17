@@ -5,6 +5,7 @@ var COMBINER =
 //	"yui";
 var pack = require('./package.json');
 var VERSION = pack.version;
+console.log("Tortilla " + VERSION);
 
 function runTortilla() {
 
@@ -36,10 +37,15 @@ function runTortilla() {
 	var tortArgs = minimist(process.argv.slice(2));
 	//console.log("args", tortArgs);
 
+	if ("verify" in tortArgs) {
+		// since we're here, requires have resolved, nothing else to check
+		console.log("Everything looks in order");
+		process.exit(0);
+	}
+
 	var plainArgs = tortArgs["_"];
 
 	if (plainArgs.length == 0) {
-		console.log("Tortilla " + VERSION);
 		console.log("Use the force, read the source!");
 		process.exit();
 	}

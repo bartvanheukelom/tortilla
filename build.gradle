@@ -1,0 +1,18 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+def WIN = Os.isFamily(Os.FAMILY_WINDOWS)
+def NODE_CMD = WIN ? "node" : "nodejs"
+def NPM_CMD = WIN ? "npm.cmd" : "npm"
+
+task install(type: Exec) {
+    commandLine NPM_CMD, "i"
+    inputs.file file("package.json")
+    outputs.dir file("node_modules")
+}
+
+// this should print version info and exit(0)
+task verify(type: Exec) {
+    mustRunAfter(install)
+    commandLine NODE_CMD, "tortilla.js", "--verify"
+}
+
+task setup(dependsOn: [install, verify]) {}
