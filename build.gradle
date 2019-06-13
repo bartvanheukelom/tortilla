@@ -13,6 +13,16 @@ task install(type: Exec) {
 task verify(type: Exec) {
     mustRunAfter(install)
     commandLine NODE_CMD, "tortilla.js", "--verify"
+
+    inputs.file file("tortilla.js")
+    inputs.dir file("node_modules")
+    inputs.dir file("shared")
+    inputs.dir file("platforms")
+
+    // this task has no real outputs, but we must declare
+    // one to make up-to-date checks work.
+    // the file isn't actually written to.
+    outputs.file file("TORTILLA_VERIFY_FAKEOUTPUT.out")
 }
 
 task setup(dependsOn: [install, verify]) {}
