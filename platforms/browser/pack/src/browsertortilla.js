@@ -176,11 +176,10 @@
 		if (!gs.hasOwnProperty("canvasMinWidth")) gs.canvasMinWidth = 1;
 		if (!gs.hasOwnProperty("canvasMinHeight")) gs.canvasMinHeight = 1;
 		if (!gs.hasOwnProperty("mobileResizeRestrictions"))	gs.mobileResizeRestrictions = false;
-
 		function sizeCanvas() {
 			resizeTimeOut = null;
-			var ww = window.innerWidth;
-			var wh = window.innerHeight;
+			var ww = $('#wrap').width();
+			var wh = $('#wrap').height();
 
 			var ow = canvas.width;
 			var oh = canvas.height;
