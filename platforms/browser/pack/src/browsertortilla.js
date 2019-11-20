@@ -129,7 +129,7 @@
 
 		var canvas = jCanvas[0];
 		tortilla.canvas = canvas;
-		var prevOrientation = window.screen.orientation ? window.screen.orientation.type : 'unknown';
+		var prevOrientation = window.matchMedia("(orientation: portrait)").matches ? "portrait" : "landscape";
 		var resizeTimeOut = null;
 
 		if (gs.noContext) {
@@ -190,19 +190,22 @@
 			var cw = ww * dpr;
 			var ch = wh * dpr;
 
-			var newOrientation = window.screen.orientation ? window.screen.orientation.type : 'unknown';
+			var newOrientation = window.matchMedia("(orientation: portrait)").matches ? "portrait" : "landscape";
 			if(gs.mobileResizeRestrictions) { // only apply these restrictions if the setting is used
-				if(newOrientation.indexOf("portrait") > -1 && prevOrientation.indexOf("landscape") > -1) {
+				if(newOrientation == "portrait") {
+					cw = wh * dpr;
+					ch = ww * dpr;
+				} 
+				if(newOrientation == "portrait" && prevOrientation == "landscape") {
 					//Once you're in landscape, don't go back
 					trace('Tortilla prevented resize from going to portrait!');
 					prevOrientation = newOrientation;
 					return;
-				} else if(!(newOrientation.indexOf("landscape") > -1 && prevOrientation.indexOf("portrait") > -1) && (cw == ow && ch < oh * 0.6)) {
+				} else if(!(newOrientation == "landscape" && prevOrientation == "portrait") && (cw == ow && ch < oh * 0.6)) {
 					prevOrientation = newOrientation;
 					return; //TODO: this is a workaround for soft keyboard resize. there has to be a better way
 				}
 			}
-
 			if (cw < gs.canvasMinWidth) {
 				cw = gs.canvasMinWidth;
 				oversize = true;
