@@ -102,7 +102,7 @@
 			WebFont.load({
 				custom: {
 					families: tortilla.FONTS,
-					urls: ["fonts.css?v=" + tortilla.BUILD_TIME]
+					urls: ["fonts.css?v=" + Math.random()]
 				},
 				active: function() {
 					trace("Fonts loaded");
@@ -195,7 +195,7 @@
 				if(newOrientation == "portrait") {
 					cw = wh * dpr;
 					ch = ww * dpr;
-				} 
+				}
 				if(newOrientation == "portrait" && prevOrientation == "landscape") {
 					//Once you're in landscape, don't go back
 					trace('Tortilla prevented resize from going to portrait!');
